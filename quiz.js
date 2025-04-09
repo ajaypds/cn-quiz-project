@@ -1,42 +1,71 @@
-const questionObj =
-{
-  category: 'Food & Drink',
-  id: 'qa-1',
-  correctAnswer: 'Three',
-  options: ['Two', 'Three', 'Four', 'Five'],
-  question:
-    "How many pieces of bun are in a Mcdonald's Big Mac?",
-};
+import questions from "./questions.js";
 
-const { correctAnswer, options, question } = questionObj;
+// console.log(questions)
+// const questionObj =
+// {
+//   category: 'Food & Drink',
+//   id: 'qa-1',
+//   correctAnswer: 'Three',
+//   options: ['Two', 'Three', 'Four', 'Five'],
+//   question:
+//     "How many pieces of bun are in a Mcdonald's Big Mac?",
+// };
 
 let score = 0;
+let currentQuestion = 0;
 
 const questionEl = document.getElementById("question");
 const optionEl = document.getElementById("options");
 const scoreEl = document.getElementById("score");
-questionEl.textContent = question;
+const nextBtn = document.getElementById("next");
+const totalScore = questions.length
 
-const shuffledOptions = shuffleOptions(options);
+function showQuestion() {
 
-shuffledOptions.forEach((opt) => {
-  const btn = document.createElement("button");
-  btn.textContent = opt;
-  optionEl.appendChild(btn);
+  const { correctAnswer, options, question } = questions[currentQuestion];
 
-  btn.addEventListener("click", () => {
-    if (opt === correctAnswer) {
-      score++;
-    } else {
-      score = score - 0.25;
-    }
-    console.log(score);
+  questionEl.textContent = question;
 
-    scoreEl.textContent = `Score: ${score}`
+  const shuffledOptions = shuffleOptions(options);
+  optionEl.innerHTML = ''
+  shuffledOptions.forEach((opt) => {
+    const btn = document.createElement("button");
+    btn.textContent = opt;
+    optionEl.appendChild(btn);
+
+    btn.addEventListener("click", () => {
+      if (opt === correctAnswer) {
+        score++;
+      } else {
+        score = score - 0.25;
+      }
+      // console.log(score);
+      scoreEl.textContent = `Score: ${score}/${totalScore}`
+      nextQuestion()
+
+    })
+  })
+}
+
+
+function nextQuestion() {
+  currentQuestion++;
+  if (currentQuestion >= questions.length) {
     questionEl.textContent = "Quiz Completed!!";
     optionEl.textContent = ""
-  })
+    nextBtn.remove()
+  } else {
+    showQuestion()
+  }
+}
+
+nextBtn.addEventListener('click', () => {
+  nextQuestion()
+  scoreEl.textContent = `Score: ${score}/${totalScore}`
 })
+
+showQuestion()
+
 
 // Shuffling the options
 function shuffleOptions(options) {
